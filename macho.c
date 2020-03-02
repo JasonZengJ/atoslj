@@ -532,6 +532,16 @@ static struct line_header * dwarf_decode_line_header (unsigned int offset, struc
     lh->line_range = read_1_byte (line_ptr);
     line_ptr += 1;
     lh->opcode_base = read_1_byte (line_ptr);
+    if (!lh->opcode_base) { 
+        line_ptr -= 4;
+        lh->default_is_stmt = read_1_byte (line_ptr);
+        line_ptr += 1;
+        lh->line_base = read_1_signed_byte (line_ptr);
+        line_ptr += 1;
+        lh->line_range = read_1_byte (line_ptr);
+        line_ptr += 1;
+        lh->opcode_base = read_1_byte (line_ptr);
+    }
     line_ptr += 1;
     lh->standard_opcode_lengths = (unsigned char *) malloc (lh->opcode_base * sizeof (unsigned char));
 
@@ -2146,7 +2156,10 @@ static char * read_full_die (struct die_info **diep, char *info_ptr,
     die->num_attrs = abbrev->num_attrs;
     die->attrs = (struct attribute *)malloc (die->num_attrs * sizeof (struct attribute));
 //        printf("%s\n", dwarf_tag_name(die->tag));
-
+    
+    CORE_ADDR low_pc = 0;
+    CORE_ADDR high_pc = 0;
+    int high_pc_index = 0;
     for (i = 0; i < abbrev->num_attrs; ++i){
         info_ptr = read_attribute (&die->attrs[i], &abbrev->attrs[i], info_ptr, cu);
 //        printf("\t%s\t %s\t 0x%lx\n", dwarf_attr_name(die->attrs[i].name), dwarf_form_name(die->attrs[i].form),die->attrs[i].u.unsnd);
@@ -2158,9 +2171,18 @@ static char * read_full_die (struct die_info **diep, char *info_ptr,
             comp_dir = die->attrs[i].u.str;
             //printf("%s\n", comp_dir);
             cu->comp_dir = comp_dir;
+        } else if (die->attrs[i].name == DW_AT_low_pc){
+            low_pc = die->attrs[i].u.unsnd;
+        } else if (die->attrs[i].name == DW_AT_high_pc){
+            high_pc = die->attrs[i].u.unsnd;
+            high_pc_index = i;
         }
     }
-
+    // sometimes, high_pc maybe a offset of low_pc
+    if (low_pc && high_pc && (long long)(low_pc - high_pc) > 0) {
+        high_pc = high_pc + low_pc;
+        die->attrs[high_pc_index].u.unsnd = high_pc;
+    }
     *diep = die;
     *has_children = abbrev->has_children;
     return info_ptr;
@@ -2636,7 +2658,6 @@ static int is_target_subprogram(struct die_info *die, struct address_range_descr
 //            printf("%s\n",die->attrs[i].u.str);
 //        }
         if(die->attrs[i].name == DW_AT_low_pc && die->attrs[i].u.addr <= integer_address ){
-            integer_address -= die->attrs[i].u.addr;
             flag++;
         }
 
