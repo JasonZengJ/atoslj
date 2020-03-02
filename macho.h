@@ -34,21 +34,21 @@
 
 enum language
 {
-    language_unknown,		/* Language not known */
-    language_auto,		/* Placeholder for automatic setting */
-    language_c,			/* C */
-    language_cplus,		/* C++ */
-    language_objc,		/* Objective-C */
+    language_unknown,   /* Language not known */
+    language_auto,    /* Placeholder for automatic setting */
+    language_c,     /* C */
+    language_cplus,   /* C++ */
+    language_objc,    /* Objective-C */
     /* APPLE LOCAL objcplus */
-    language_objcplus,		/* Objective-C++ */
-    language_java,		/* Java */
-    language_fortran,		/* Fortran */
-    language_m2,		/* Modula-2 */
-    language_asm,		/* Assembly language */
-    language_scm,    		/* Scheme / Guile */
-    language_pascal,		/* Pascal */
-    language_ada,		/* Ada */
-    language_minimal,		/* All other languages, minimal support only */
+    language_objcplus,    /* Objective-C++ */
+    language_java,    /* Java */
+    language_fortran,   /* Fortran */
+    language_m2,    /* Modula-2 */
+    language_asm,   /* Assembly language */
+    language_scm,       /* Scheme / Guile */
+    language_pascal,    /* Pascal */
+    language_ada,   /* Ada */
+    language_minimal,   /* All other languages, minimal support only */
     nr_languages
 };
 
@@ -137,13 +137,13 @@ struct dwarf2_per_cu_data
    be mapped directly onto the beginning of the .debug_info section.  */
 struct aranges_header
 {
-    unsigned int length;	/* byte len of the .debug_aranges
+    unsigned int length;  /* byte len of the .debug_aranges
                                contribution */
-    unsigned short version;	/* version number -- 2 for dwarf
+    unsigned short version; /* version number -- 2 for dwarf
                                version 2 */
-    unsigned int info_offset;	/* offset into .debug_info section */
-    unsigned char addr_size;	/* byte size of an address */
-    unsigned char seg_size;	/* byte size of segment descriptor */
+    unsigned int info_offset; /* offset into .debug_info section */
+    unsigned char addr_size;  /* byte size of an address */
+    unsigned char seg_size; /* byte size of segment descriptor */
 } ;
 
 struct address_range_descriptor{
@@ -260,25 +260,25 @@ struct attribute
 /* This data structure holds a complete die structure. */
 struct die_info
 {
-    enum dwarf_tag tag;		/* Tag indicating type of die */
-    unsigned int abbrev;	/* Abbrev number */
-    unsigned int offset;	/* Offset in .debug_info section */
+    enum dwarf_tag tag;   /* Tag indicating type of die */
+    unsigned int abbrev;  /* Abbrev number */
+    unsigned int offset;  /* Offset in .debug_info section */
     /* APPLE LOCAL - dwarf repository  */
     //unsigned int repository_id; /* Id number in debug repository */
-    unsigned int num_attrs;	/* Number of attributes */
-    struct attribute *attrs;	/* An array of attributes */
-    //struct die_info *next_ref;	/* Next die in ref hash table */
+    unsigned int num_attrs; /* Number of attributes */
+    struct attribute *attrs;  /* An array of attributes */
+    //struct die_info *next_ref;  /* Next die in ref hash table */
 
     /* The dies in a compilation unit form an n-ary tree.  PARENT
        points to this die's parent; CHILD points to the first child of
        this node; and all the children of a given node are chained
        together via their SIBLING fields, terminated by a die whose
        tag is zero.  */
-    struct die_info *child;	/* Its first child, if any.  */
-    struct die_info *sibling;	/* Its next sibling, if any.  */
-    struct die_info *parent;	/* Its parent, if any.  */
+    struct die_info *child; /* Its first child, if any.  */
+    struct die_info *sibling; /* Its next sibling, if any.  */
+    struct die_info *parent;  /* Its parent, if any.  */
 
-    //struct type *type;		/* Cached type information */
+    //struct type *type;    /* Cached type information */
 };
 
 
@@ -327,7 +327,7 @@ distinguish these in buildsym.c.  */
        by it's FT_<TYPENAME> value.  The array has a fixed size set by the
        FT_NUM_MEMBERS compile time constant, which is the number of predefined
        fundamental types gdb knows how to construct.  */
-    //struct type *ftypes[FT_NUM_MEMBERS];	/* Fundamental types */
+    //struct type *ftypes[FT_NUM_MEMBERS];  /* Fundamental types */
 
     /* DWARF abbreviation table associated with this compilation unit.  */
     struct abbrev_info **dwarf2_abbrevs;
@@ -391,19 +391,19 @@ distinguish these in buildsym.c.  */
    be mapped directly onto the beginning of the .debug_info section.  */
 struct statement_prologue
 {
-    unsigned int total_length;	/* byte length of the statement
+    unsigned int total_length;  /* byte length of the statement
                                    information */
-    unsigned short version;	/* version number -- 2 for DWARF
+    unsigned short version; /* version number -- 2 for DWARF
                                version 2 */
-    unsigned int prologue_length;	/* # bytes between prologue &
+    unsigned int prologue_length; /* # bytes between prologue &
                                        stmt program */
-    unsigned char minimum_instruction_length;	/* byte size of
+    unsigned char minimum_instruction_length; /* byte size of
                                                    smallest instr */
-    unsigned char default_is_stmt;	/* initial value of is_stmt
+    unsigned char default_is_stmt;  /* initial value of is_stmt
                                        register */
     char line_base;
     unsigned char line_range;
-    unsigned char opcode_base;	/* number assigned to first special
+    unsigned char opcode_base;  /* number assigned to first special
                                    opcode */
     unsigned char *standard_opcode_lengths;
 };
@@ -417,6 +417,7 @@ struct line_header
     unsigned short version;
     unsigned int header_length;
     unsigned char minimum_instruction_length;
+    unsigned char max_ops_per_inst;
     unsigned char default_is_stmt;
     int line_base;
     unsigned char line_range;
@@ -512,8 +513,8 @@ struct thin_macho{
     char *data;
     char *strings;
     long int size;
-    cpu_type_t	cputype;	/* cpu specifier */
-    cpu_subtype_t	cpusubtype;	/* machine specifier */
+    cpu_type_t  cputype;  /* cpu specifier */
+    cpu_subtype_t cpusubtype; /* machine specifier */
     struct dwarf2_per_objfile* dwarf2_per_objfile;
     struct nlist *all_symbols;
     struct nlist_64 *all_symbols64;

@@ -189,16 +189,33 @@ enum dwarf_tag
     DW_TAG_imported_unit = 0x3d,
     DW_TAG_condition = 0x3f,
     DW_TAG_shared_type = 0x40,
+    DW_TAG_type_unit =   0x41,  /* DWARF4 */
+    DW_TAG_rvalue_reference_type = 0x42,  /* DWARF4 */
+    DW_TAG_template_alias = 0x43,  /* DWARF4 */
+    DW_TAG_coarray_type =             0x44,  /* DWARF5 */
+    DW_TAG_generic_subrange =         0x45,  /* DWARF5 */
+    DW_TAG_dynamic_type =             0x46,  /* DWARF5 */
+    DW_TAG_atomic_type =              0x47,  /* DWARF5 */
+    DW_TAG_call_site =                0x48,  /* DWARF5 */
+    DW_TAG_call_site_parameter =      0x49,  /* DWARF5 */
+    DW_TAG_skeleton_unit =            0x4a,  /* DWARF5 */
+    DW_TAG_immutable_type =           0x4b,  /* DWARF5 */
     /* SGI/MIPS Extensions.  */
     DW_TAG_MIPS_loop = 0x4081,
     /* HP extensions.  See: ftp://ftp.hp.com/pub/lang/tools/WDB/wdb-4.0.tar.gz .  */
     DW_TAG_HP_array_descriptor = 0x4090,
     /* GNU extensions.  */
-    DW_TAG_format_label = 0x4101,	/* For FORTRAN 77 and Fortran 90.  */
-    DW_TAG_function_template = 0x4102,	/* For C++.  */
-    DW_TAG_class_template = 0x4103,	/* For C++.  */
+    DW_TAG_format_label = 0x4101,   /* For FORTRAN 77 and Fortran 90.  */
+    DW_TAG_function_template = 0x4102,  /* For C++.  */
+    DW_TAG_class_template = 0x4103, /* For C++.  */
     DW_TAG_GNU_BINCL = 0x4104,
     DW_TAG_GNU_EINCL = 0x4105,
+    DW_TAG_GNU_template_template_param = 0x4106,
+    DW_TAG_GNU_template_parameter_pack = 0x4107,
+    DW_TAG_GNU_formal_parameter_pack   = 0x4108,
+    DW_TAG_GNU_call_site               = 0x4109,
+    DW_TAG_GNU_call_site_parameter = 0x410a,
+    DW_TAG_APPLE_property = 0x4200,
     /* Extensions for UPC.  See: http://upc.gwu.edu/~upc.  */
     DW_TAG_upc_shared_type = 0x8765,
     DW_TAG_upc_strict_type = 0x8766,
@@ -208,12 +225,12 @@ enum dwarf_tag
     DW_TAG_PGI_interface_block = 0xA020
 };
 
-#define DW_TAG_lo_user	0x4080
-#define DW_TAG_hi_user	0xffff
+#define DW_TAG_lo_user  0x4080
+#define DW_TAG_hi_user  0xffff
 
 /* Flag that tells whether entry has a child or not.  */
 #define DW_children_no   0
-#define	DW_children_yes  1
+#define DW_children_yes  1
 
 /* Form names and codes.  */
 enum dwarf_form
@@ -239,6 +256,10 @@ enum dwarf_form
     DW_FORM_ref8 = 0x14,
     DW_FORM_ref_udata = 0x15,
     DW_FORM_indirect = 0x16,
+    DW_FORM_sec_offset = 0x17,
+    DW_FORM_exprloc =  0x18,
+    DW_FORM_flag_present = 0x19,
+    DW_FORM_ref_sig8 = 0x20,
     DW_FORM_APPLE_db_str = 0x50
 };
 
@@ -335,6 +356,44 @@ enum dwarf_attribute
     DW_AT_elemental     = 0x66,
     DW_AT_pure          = 0x67,
     DW_AT_recursive     = 0x68,
+    DW_AT_signature     = 0x69, /* DWARF4 */
+    DW_AT_main_subprogram =                 0x6a, /* DWARF4 */
+    DW_AT_data_bit_offset =                 0x6b, /* DWARF4 */
+    DW_AT_const_expr =                      0x6c, /* DWARF4 */
+    DW_AT_enum_class =                      0x6d, /* DWARF4 */
+    DW_AT_linkage_name =                    0x6e, /* DWARF4 */
+    DW_AT_string_length_bit_size =          0x6f,/* DWARF5 */
+    DW_AT_string_length_byte_size =         0x70,/* DWARF5 */
+    DW_AT_rank =                            0x71,/* DWARF5 */
+    DW_AT_str_offsets_base =                0x72,/* DWARF5 */
+    DW_AT_addr_base =                       0x73,/* DWARF5 */
+      /* Use DW_AT_rnglists_base, DW_AT_ranges_base is obsolete as */
+      /* it was only used in some DWARF5 drafts, not the final DWARF5. */
+    DW_AT_rnglists_base =                   0x74,/* DWARF5 */
+      /*  DW_AT_dwo_id, an experiment in some DWARF4+. Not DWARF5! */
+    DW_AT_dwo_id =                          0x75,/* DWARF4!*/
+    DW_AT_dwo_name =                        0x76,/* DWARF5 */
+    DW_AT_referenc =                        0x77,/* DWARF5 */
+    DW_AT_rvalue_reference =                0x78,/* DWARF5 */
+    DW_AT_macros =                          0x79,/* DWARF5 */
+    DW_AT_call_all_calls =                  0x7a,/* DWARF5 */
+    DW_AT_call_all_source_calls =           0x7b,/* DWARF5 */
+    DW_AT_call_all_tail_calls =             0x7c,/* DWARF5 */
+    DW_AT_call_return_pc =                  0x7d,/* DWARF5 */
+    DW_AT_call_value =                      0x7e,/* DWARF5 */
+    DW_AT_call_origin =                     0x7f,/* DWARF5 */
+    DW_AT_call_parameter =                  0x80,/* DWARF5 */
+    DW_AT_call_pc =                         0x81,/* DWARF5 */
+    DW_AT_call_tail_call =                  0x82,/* DWARF5 */
+    DW_AT_call_target =                     0x83,/* DWARF5 */
+    DW_AT_call_target_clobbered =           0x84,/* DWARF5 */
+    DW_AT_call_data_location =              0x85,/* DWARF5 */
+    DW_AT_call_data_value =                 0x86,/* DWARF5 */
+    DW_AT_noreturn =                        0x87,/* DWARF5 */
+    DW_AT_alignment =                       0x88,/* DWARF5 */
+    DW_AT_export_symbols =                  0x89,/* DWARF5 */
+    DW_AT_deleted =                         0x8a,/* DWARF5 */
+    DW_AT_defaulted =                       0x8b,/* DWARF5 */
     /* SGI/MIPS extensions.  */
     DW_AT_MIPS_fde = 0x2001,
     DW_AT_MIPS_loop_begin = 0x2002,
@@ -370,6 +429,52 @@ enum dwarf_attribute
     DW_AT_body_begin = 0x2105,
     DW_AT_body_end   = 0x2106,
     DW_AT_GNU_vector = 0x2107,
+    /*  Thread safety, see http://gcc.gnu.org/wiki/ThreadSafetyAnnotation .  */
+    /*  The values here are from gcc-4.6.2 include/dwarf2.h.  The
+        values are not given on the web page at all, nor on web pages
+        it refers to. */
+    DW_AT_GNU_guarded_by =                   0x2108,/* GNU */
+    DW_AT_GNU_pt_guarded_by =                0x2109,/* GNU */
+    DW_AT_GNU_guarded =                      0x210a,/* GNU */
+    DW_AT_GNU_pt_guarded =                   0x210b,/* GNU */
+    DW_AT_GNU_locks_excluded =               0x210c,/* GNU */
+    DW_AT_GNU_exclusive_locks_required =     0x210d,/* GNU */
+    DW_AT_GNU_shared_locks_required =        0x210e,/* GNU */
+
+    /* See http://gcc.gnu.org/wiki/DwarfSeparateTypeInfo */
+    DW_AT_GNU_odr_signature =                0x210f,/* GNU */
+
+    /*  See  See http://gcc.gnu.org/wiki/TemplateParmsDwarf */
+    /*  The value here is from gcc-4.6.2 include/dwarf2.h.  The value is
+        not consistent with the web page as of December 2011. */
+    DW_AT_GNU_template_name =                0x2110,/* GNU */
+    /*  The GNU call site extension.
+        See http://www.dwarfstd.org/ShowIssue.php?issue=100909.2&type=open .  */
+    DW_AT_GNU_call_site_value =              0x2111,/* GNU */
+    DW_AT_GNU_call_site_data_value =         0x2112,/* GNU */
+    DW_AT_GNU_call_site_target =             0x2113,/* GNU */
+    DW_AT_GNU_call_site_target_clobbered =   0x2114,/* GNU */
+    DW_AT_GNU_tail_call =                    0x2115,/* GNU */
+    DW_AT_GNU_all_tail_call_sites =          0x2116,/* GNU */
+    DW_AT_GNU_all_call_sites =               0x2117,/* GNU */
+    DW_AT_GNU_all_source_call_sites =        0x2118,/* GNU */
+    /*  Section offset to .debug_macro section. */
+    DW_AT_GNU_macros =                       0x2119,/* GNU */
+    /* The GNU DebugFission project: http://gcc.gnu.org/wiki/DebugFission */
+    DW_AT_GNU_dwo_name =                     0x2130,/* GNU */
+    DW_AT_GNU_dwo_id =                       0x2131,/* GNU */
+
+    DW_AT_GNU_ranges_base =                  0x2132,/* GNU */
+    DW_AT_GNU_addr_base =                    0x2133,/* GNU */
+    DW_AT_GNU_pubnames =                     0x2134,/* GNU */
+    DW_AT_GNU_pubtypes =                     0x2135,/* GNU */
+
+    /* To distinguish distinct basic blocks in a single source line. */
+    DW_AT_GNU_discriminator =                0x2136,/* GNU */
+    /*  Ada GNAT gcc attributes. constant integer forms. */
+    DW_AT_GNU_numerator =                    0x2303,/* GNU */
+    DW_AT_GNU_denominator =                  0x2304,/* GNU */
+    DW_AT_GNU_bias =                         0x2305,/* GNU */
     /* VMS extensions.  */
     DW_AT_VMS_rtnbeg_pd_address = 0x2201,
     /* Apple repository extensions.  */
@@ -384,11 +489,29 @@ enum dwarf_attribute
     /* PGI (STMicroelectronics) extensions.  */
     DW_AT_PGI_lbase    = 0x3a00,
     DW_AT_PGI_soffset  = 0x3a01,
-    DW_AT_PGI_lstride  = 0x3a02
+    DW_AT_PGI_lstride  = 0x3a02,
+    DW_AT_LLVM_include_path = 0x3e00,
+    DW_AT_LLVM_config_macros = 0x3e01,
+    DW_AT_LLVM_isysroot = 0x3e02,
+    /* There are two groups of Apple extensions here, it is
+       unclear what exactly is correct.  */
+    DW_AT_APPLE_optimized =                 0x3fe1, /* Apple */
+    DW_AT_APPLE_flags =                     0x3fe2, /* Apple */
+    DW_AT_APPLE_isa =                       0x3fe3, /* Apple */
+    DW_AT_APPLE_block =                     0x3fe4, /* Apple */
+    DW_AT_APPLE_major_runtime_vers =        0x3fe5, /* Apple */
+    DW_AT_APPLE_runtime_class =             0x3fe6, /* Apple */
+    DW_AT_APPLE_omit_frame_ptr =            0x3fe7, /* Apple */
+    DW_AT_APPLE_property_name =             0x3fe8,
+    DW_AT_APPLE_property_getter =           0x3fe9,
+    DW_AT_APPLE_property_setter =           0x3fea,
+    DW_AT_APPLE_property_attribute =        0x3feb,
+    DW_AT_APPLE_objc_complete_type =        0x3fec,
+    DW_AT_hi_user =                         0x3fff
 };
 
-#define DW_AT_lo_user	0x2000	/* Implementation-defined range start.  */
-#define DW_AT_hi_user	0x3ff0	/* Implementation-defined range end.  */
+#define DW_AT_lo_user   0x2000  /* Implementation-defined range start.  */
+#define DW_AT_hi_user   0x3ff0  /* Implementation-defined range end.  */
 
 /* Location atom names and codes.  */
 enum dwarf_location_atom
@@ -558,8 +681,8 @@ enum dwarf_location_atom
     DW_OP_HP_tls         = 0xe6
 };
 
-#define DW_OP_lo_user	0xe0	/* Implementation-defined range start.  */
-#define DW_OP_hi_user	0xff	/* Implementation-defined range end.  */
+#define DW_OP_lo_user   0xe0    /* Implementation-defined range start.  */
+#define DW_OP_hi_user   0xff    /* Implementation-defined range end.  */
 
 /* Type encodings.  */
 enum dwarf_type
@@ -591,8 +714,8 @@ enum dwarf_type
     DW_ATE_HP_imaginary_float128 = 0x86
 };
 
-#define	DW_ATE_lo_user 0x80
-#define	DW_ATE_hi_user 0xff
+#define DW_ATE_lo_user 0x80
+#define DW_ATE_hi_user 0xff
 
 /* Decimal sign encodings.  */
 enum dwarf_decimal_sign_encoding
@@ -764,17 +887,17 @@ enum dwarf_call_frame_info
     DW_CFA_GNU_negative_offset_extended = 0x2f
 };
 
-#define DW_CIE_ID	  0xffffffff
-#define DW_CIE_VERSION	  1
+#define DW_CIE_ID     0xffffffff
+#define DW_CIE_VERSION    1
 
 #define DW_CFA_extended   0
 #define DW_CFA_lo_user    0x1c
 #define DW_CFA_hi_user    0x3f
 
-#define DW_CHILDREN_no		     0x00
-#define DW_CHILDREN_yes		     0x01
+#define DW_CHILDREN_no           0x00
+#define DW_CHILDREN_yes          0x01
 
-#define DW_ADDR_none		0
+#define DW_ADDR_none        0
 
 /* Source language names and codes.  */
 enum dwarf_source_language
@@ -805,8 +928,8 @@ enum dwarf_source_language
     DW_LANG_Upc = 0x8765
 };
 
-#define DW_LANG_lo_user 0x8000	/* Implementation-defined range start.  */
-#define DW_LANG_hi_user 0xffff	/* Implementation-defined range start.  */
+#define DW_LANG_lo_user 0x8000  /* Implementation-defined range start.  */
+#define DW_LANG_hi_user 0xffff  /* Implementation-defined range start.  */
 
 /* Names and codes for macro information.  */
 enum dwarf_macinfo_record_type
@@ -820,25 +943,25 @@ enum dwarf_macinfo_record_type
 
 /* @@@ For use with GNU frame unwind information.  */
 
-#define DW_EH_PE_absptr		0x00
-#define DW_EH_PE_omit		0xff
+#define DW_EH_PE_absptr     0x00
+#define DW_EH_PE_omit       0xff
 
-#define DW_EH_PE_uleb128	0x01
-#define DW_EH_PE_udata2		0x02
-#define DW_EH_PE_udata4		0x03
-#define DW_EH_PE_udata8		0x04
-#define DW_EH_PE_sleb128	0x09
-#define DW_EH_PE_sdata2		0x0A
-#define DW_EH_PE_sdata4		0x0B
-#define DW_EH_PE_sdata8		0x0C
-#define DW_EH_PE_signed		0x08
+#define DW_EH_PE_uleb128    0x01
+#define DW_EH_PE_udata2     0x02
+#define DW_EH_PE_udata4     0x03
+#define DW_EH_PE_udata8     0x04
+#define DW_EH_PE_sleb128    0x09
+#define DW_EH_PE_sdata2     0x0A
+#define DW_EH_PE_sdata4     0x0B
+#define DW_EH_PE_sdata8     0x0C
+#define DW_EH_PE_signed     0x08
 
-#define DW_EH_PE_pcrel		0x10
-#define DW_EH_PE_textrel	0x20
-#define DW_EH_PE_datarel	0x30
-#define DW_EH_PE_funcrel	0x40
-#define DW_EH_PE_aligned	0x50
+#define DW_EH_PE_pcrel      0x10
+#define DW_EH_PE_textrel    0x20
+#define DW_EH_PE_datarel    0x30
+#define DW_EH_PE_funcrel    0x40
+#define DW_EH_PE_aligned    0x50
 
-#define DW_EH_PE_indirect	0x80
+#define DW_EH_PE_indirect   0x80
 
 #endif /* _ELF_DWARF2_H */

@@ -171,6 +171,20 @@ const char* dwarf_attr_name (unsigned int attr)
             return "DW_AT_call_file";
         case DW_AT_call_line:
             return "DW_AT_call_line";
+        case DW_AT_explicit:
+            return "DW_AT_explicit";
+        case DW_AT_linkage_name:
+            return "DW_AT_linkage_name";
+        case DW_AT_call_return_pc:
+            return "DW_AT_call_return_pc";
+        case DW_AT_call_origin:
+            return "DW_AT_call_origin";
+        case DW_AT_call_tail_call:
+            return "DW_AT_call_tail_call";
+        case DW_AT_export_symbols:
+            return "DW_AT_export_symbols";
+        case DW_AT_noreturn:
+            return "DW_AT_noreturn";
             //#ifdef MIPS
             //    case DW_AT_MIPS_fde:
             //      return "DW_AT_MIPS_fde";
@@ -202,6 +216,62 @@ const char* dwarf_attr_name (unsigned int attr)
             return "DW_AT_body_end";
         case DW_AT_GNU_vector:
             return "DW_AT_GNU_vector";
+        case DW_AT_APPLE_optimized:
+            return "DW_AT_APPLE_optimized";
+        case DW_AT_APPLE_flags:
+            return "DW_AT_APPLE_flags";
+        case DW_AT_APPLE_isa:
+            
+            return "DW_AT_APPLE_isa";
+        case DW_AT_APPLE_block:
+            
+            return "DW_AT_APPLE_block";
+        case DW_AT_APPLE_major_runtime_vers:
+            
+            return "DW_AT_APPLE_major_runtime_vers";
+        case DW_AT_APPLE_runtime_class:
+            
+            return "DW_AT_APPLE_runtime_class";
+        case DW_AT_APPLE_omit_frame_ptr:
+            
+            return "DW_AT_APPLE_omit_frame_ptr";
+        case DW_AT_GNU_dwo_id:
+            return "DW_AT_GNU_dwo_id";
+        case DW_AT_call_all_calls:
+            return "DW_AT_call_all_calls";
+        case DW_AT_LLVM_include_path:
+            return "DW_AT_LLVM_include_path";
+        case DW_AT_object_pointer:
+            return "DW_AT_object_pointer";
+        case DW_AT_LLVM_config_macros:
+            return "DW_AT_LLVM_config_macros";
+        case DW_AT_LLVM_isysroot:
+            return "DW_AT_LLVM_isysroot";
+        case DW_AT_data_bit_offset:
+            return "DW_AT_data_bit_offset";
+        case DW_AT_alignment:
+            return "DW_AT_alignment";
+        case DW_AT_enum_class:
+            return "DW_AT_enum_class";
+        /* GNU */
+        case DW_AT_GNU_ranges_base:
+            return "DW_AT_GNU_ranges_base";
+        case DW_AT_GNU_addr_base:
+            return "DW_AT_GNU_addr_base";
+        case DW_AT_GNU_pubnames:
+            return "DW_AT_GNU_pubnames";
+        case DW_AT_GNU_pubtypes:
+            return "DW_AT_GNU_pubtypes";
+        case DW_AT_APPLE_property_name:
+            return "DW_AT_APPLE_property_name";
+        case DW_AT_APPLE_property_getter:
+            return "DW_AT_APPLE_property_getter";
+        case DW_AT_APPLE_property_setter:
+            return "DW_AT_APPLE_property_setter";
+        case DW_AT_APPLE_property_attribute:
+            return "DW_AT_APPLE_property_attribute";
+        case DW_AT_APPLE_objc_complete_type:
+            return "DW_AT_APPLE_objc_complete_type";
             //    /* APPLE LOCAL begin dwarf repository  */
             //    case DW_AT_APPLE_repository_file:
             //      return "DW_AT_APPLE_repository_file";
@@ -271,8 +341,16 @@ const char * dwarf_form_name (unsigned form)
             return "DW_FORM_ref_udata";
         case DW_FORM_indirect:
             return "DW_FORM_indirect";
-            //case DW_FORM_APPLE_db_str:
-            //  return "DW_FORM_APPLE_db_str";
+        case DW_FORM_sec_offset:
+            return "DW_FORM_sec_offset";
+        case DW_FORM_exprloc:
+            return "DW_FORM_exprloc";
+        case DW_FORM_flag_present:
+            return "DW_FORM_flag_present";
+        case DW_FORM_ref_sig8:
+            return "DW_FORM_ref_sig8";
+        case DW_FORM_APPLE_db_str:
+            return "DW_FORM_APPLE_db_str";
         default:
             return "DW_FORM_<unknown>";
     }
@@ -284,8 +362,6 @@ const char * dwarf_tag_name (unsigned tag)
 {
     switch (tag)
     {
-        case DW_TAG_padding:
-            return "DW_TAG_padding";
         case DW_TAG_array_type:
             return "DW_TAG_array_type";
         case DW_TAG_class_type:
@@ -396,6 +472,24 @@ const char * dwarf_tag_name (unsigned tag)
             return "DW_TAG_partial_unit";
         case DW_TAG_imported_unit:
             return "DW_TAG_imported_unit";
+        case DW_TAG_rvalue_reference_type:
+            return "DW_TAG_rvalue_reference_type";
+        case DW_TAG_coarray_type:
+            return "DW_TAG_coarray_type";
+        case DW_TAG_generic_subrange:
+            return "DW_TAG_generic_subrange";
+        case DW_TAG_dynamic_type:
+            return "DW_TAG_dynamic_type";
+        case DW_TAG_atomic_type:
+            return "DW_TAG_atomic_type";
+        case DW_TAG_call_site:
+            return "DW_TAG_call_site";
+        case DW_TAG_call_site_parameter:
+            return "DW_TAG_call_site_parameter";
+        case DW_TAG_skeleton_unit:
+            return "DW_TAG_skeleton_unit";
+        case DW_TAG_immutable_type:
+            return "DW_TAG_immutable_type";
         case DW_TAG_MIPS_loop:
             return "DW_TAG_MIPS_loop";
         case DW_TAG_format_label:
@@ -404,6 +498,18 @@ const char * dwarf_tag_name (unsigned tag)
             return "DW_TAG_function_template";
         case DW_TAG_class_template:
             return "DW_TAG_class_template";
+        case DW_TAG_GNU_template_template_param:
+            return "DW_TAG_GNU_template_template_param";
+        case DW_TAG_GNU_template_parameter_pack:
+            return "DW_TAG_GNU_template_parameter_pack";
+        case DW_TAG_GNU_formal_parameter_pack:
+            return "DW_TAG_GNU_formal_parameter_pack";
+        case DW_TAG_GNU_call_site:
+            return "DW_TAG_GNU_call_site";
+        case DW_TAG_GNU_call_site_parameter:
+            return "DW_TAG_GNU_call_site_parameter";
+        case DW_TAG_APPLE_property:
+            return "DW_TAG_APPLE_property";
         default:
             return "DW_TAG_<unknown>";
     }

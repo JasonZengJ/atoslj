@@ -523,6 +523,8 @@ static struct line_header * dwarf_decode_line_header (unsigned int offset, struc
     line_ptr += bytes_read;
     lh->minimum_instruction_length = read_1_byte (line_ptr);
     line_ptr += 1;
+    lh->max_ops_per_inst = read_1_byte(line_ptr);
+    line_ptr += 1;
     lh->default_is_stmt = read_1_byte (line_ptr);
     line_ptr += 1;
     lh->line_base = read_1_signed_byte (line_ptr);
@@ -1444,6 +1446,9 @@ int select_thin_macho_by_arch(struct target_file *tf, const char *target_arch){
                             //armv8
                             arch = "armv8";
                             break;
+                        case CPU_SUBTYPE_ARM64_ALL:
+                            arch = "arm64";
+                            break;
                    }
                    break;
                }
@@ -1463,6 +1468,9 @@ int select_thin_macho_by_arch(struct target_file *tf, const char *target_arch){
                //ppc64
                arch = "ppc64";
                break;
+            case CPU_TYPE_ARM64:
+                arch = "arm64";
+                break;
         }
         if (arch != NULL && strcmp(arch, target_arch) == 0){
             return i;
@@ -1933,11 +1941,24 @@ static char * read_attribute_value (struct attribute *attr, unsigned int form, c
     switch (form)
     {
         case DW_FORM_addr:
-        case DW_FORM_ref_addr:
-            /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
             attr->u.addr = read_address_of_cu (info_ptr, cu, (int *) &bytes_read);
             info_ptr += bytes_read;
             break;
+        case DW_FORM_ref_addr:
+            /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
+//            if (attr->name == DW_AT_import || attr->name == DW_AT_type || attr->name == DW_AT_specification || attr->name == DW_AT_abstract_origin || attr->name == DW_AT_containing_type) {
+            
+            if (cu_header->version == 2) {
+                attr->u.addr = read_address_of_cu (info_ptr, cu, (int *) &bytes_read);
+                info_ptr += bytes_read;
+                break;
+            }
+            
+                attr->u.addr = read_signed_32(info_ptr);
+                info_ptr += 4;
+                break;
+//            }
+//            break;
         case DW_FORM_block2:
             blk = dwarf_alloc_block (cu);
             blk->size = read_2_bytes (info_ptr);
@@ -2037,6 +2058,23 @@ static char * read_attribute_value (struct attribute *attr, unsigned int form, c
             info_ptr += bytes_read;
             info_ptr = read_attribute_value (attr, form, info_ptr, cu);
             break;
+        case DW_FORM_sec_offset:
+            attr->u.unsnd = read_4_bytes (info_ptr);
+            info_ptr += 4;
+            break;
+        case DW_FORM_exprloc: {
+            uint8_t size = read_unsigned_leb128(info_ptr, &bytes_read);
+            info_ptr += bytes_read;
+            attr->u.snd = read_unsigned_leb128(info_ptr, &bytes_read);
+//            info_ptr += bytes_read
+            info_ptr += size;
+        }
+            break;
+        case DW_FORM_flag_present:
+            
+            break;
+        case DW_FORM_ref_sig8:
+            break;
         default:
             fprintf(stderr, "Dwarf Error: Cannot handle  in DWARF reader [in module s]");
             //   dwarf_form_name (form),
@@ -2078,11 +2116,13 @@ static char * read_full_die (struct die_info **diep, char *info_ptr,
     struct abbrev_info *abbrev;
     struct die_info *die;
     char *comp_dir = NULL;
-
+//    printf("\n%p\n", info_ptr);
     abbrev_number = read_unsigned_leb128 (info_ptr, &bytes_read);
     info_ptr += bytes_read;
     if (!abbrev_number)
     {
+//        abbrev_number = read_unsigned_leb128 (info_ptr, &bytes_read);
+//        info_ptr += bytes_read;
         die = dwarf_alloc_die ();
         die->tag = 0;
         die->abbrev = abbrev_number;
@@ -2105,11 +2145,11 @@ static char * read_full_die (struct die_info **diep, char *info_ptr,
 
     die->num_attrs = abbrev->num_attrs;
     die->attrs = (struct attribute *)malloc (die->num_attrs * sizeof (struct attribute));
-    //    printf("%s\n", dwarf_tag_name(die->tag));
+//        printf("%s\n", dwarf_tag_name(die->tag));
 
     for (i = 0; i < abbrev->num_attrs; ++i){
         info_ptr = read_attribute (&die->attrs[i], &abbrev->attrs[i], info_ptr, cu);
-        //        printf("%s\t %s\n", dwarf_attr_name(die->attrs[i].name), dwarf_form_name(die->attrs[i].form));
+//        printf("\t%s\t %s\t 0x%lx\n", dwarf_attr_name(die->attrs[i].name), dwarf_form_name(die->attrs[i].form),die->attrs[i].u.unsnd);
 
         //   /* APPLE LOCAL begin dwarf repository  */
         //   if (die->attrs[i].name == DW_AT_APPLE_repository_file)
@@ -2380,7 +2420,7 @@ static int parse_dwarf_abbrev(struct dwarf2_per_objfile *dwarf2_per_objfile){
             while(attr_name_code != 0 || attr_form_code != 0){
                 attrs[j].name = attr_name_code;
                 attrs[j].form = attr_form_code;
-                debug("%s %s\n", dwarf_attr_name(attrs[j].name), dwarf_form_name(attrs[j].form));
+//                debug("%p - %s:%x - %s:%x\n",info_ptr,dwarf_attr_name(attrs[j].name),attr_name_code, dwarf_form_name(attrs[j].form),attr_form_code);
                 attr_name_code = (unsigned int)read_unsigned_leb128(info_ptr ,&bytes_read);
                 info_ptr += bytes_read;
                 attr_form_code = (unsigned int)read_unsigned_leb128(info_ptr ,&bytes_read);
@@ -2583,6 +2623,7 @@ static int is_target_subprogram(struct die_info *die, struct address_range_descr
     //FIXME May not need target_ard
     int flag = 0;
     unsigned int i = 0;
+    
     for(i = 0; i< die->num_attrs; i++){
         //if(die->attrs[i].name == DW_AT_low_pc && die->attrs[i].u.addr >= target_ard->beginning_addr && integer_address ){
         //    flag++;
@@ -2591,7 +2632,11 @@ static int is_target_subprogram(struct die_info *die, struct address_range_descr
         //if(die->attrs[i].name == DW_AT_high_pc && die->attrs[i].u.addr <= (target_ard->beginning_addr + target_ard->length)){
         //    flag++;
         //}
+//        if (die->attrs[i].name == DW_AT_name) {
+//            printf("%s\n",die->attrs[i].u.str);
+//        }
         if(die->attrs[i].name == DW_AT_low_pc && die->attrs[i].u.addr <= integer_address ){
+            integer_address -= die->attrs[i].u.addr;
             flag++;
         }
 
@@ -2675,9 +2720,9 @@ void print_thin_macho_aranges(struct thin_macho *thin_macho){
     unsigned int i = 0, j = 0;
     for(i = 0; i< num; i++){
         struct arange *arange = all_aranges[i];
-        printf("Address Range Header: length = 0x%08x  version = 0x%04x  cu_offset = 0x%08x  addr_size = 0x%02x  seg_size = 0x%02x\n", arange->aranges_header.length, arange->aranges_header.version, arange->aranges_header.info_offset, arange->aranges_header.addr_size, arange->aranges_header.seg_size);
+//        printf("Address Range Header: length = 0x%08x  version = 0x%04x  cu_offset = 0x%08x  addr_size = 0x%02x  seg_size = 0x%02x\n", arange->aranges_header.length, arange->aranges_header.version, arange->aranges_header.info_offset, arange->aranges_header.addr_size, arange->aranges_header.seg_size);
         for (j = 0; j < arange->num_of_ards; j++){
-            printf("0x%016llx + 0x%016llx = 0x%016llx\n", arange->address_range_descriptors[j].beginning_addr, arange->address_range_descriptors[j].length, arange->address_range_descriptors[j].beginning_addr + arange->address_range_descriptors[j].length);
+//            printf("0x%016llx + 0x%016llx = 0x%016llx\n", arange->address_range_descriptors[j].beginning_addr, arange->address_range_descriptors[j].length, arange->address_range_descriptors[j].beginning_addr + arange->address_range_descriptors[j].length);
             //printf("0x%08x + 0x%08x = 0x%08x\n", arange->address_range_descriptors[j].beginning_addr, arange->address_range_descriptors[j].length, arange->address_range_descriptors[j].beginning_addr + arange->address_range_descriptors[j].length);
         }
     }
@@ -2742,6 +2787,9 @@ int lookup_by_address_in_dwarf(struct thin_macho *thin_macho, CORE_ADDR integer_
                 break;
             }
         }
+        if (target_arange != NULL) {
+            break;
+        }
     }
 
     if(target_arange == NULL){
@@ -2758,7 +2806,7 @@ int lookup_by_address_in_dwarf(struct thin_macho *thin_macho, CORE_ADDR integer_
     struct dwarf2_per_cu_data *target_dwarf2_per_cu_data= NULL;
     for (i = 0; i < dwarf2_per_objfile->n_comp_units; i++){
         if (dwarf2_per_objfile->all_comp_units[i]->offset == target_arange->aranges_header.info_offset){
-            debug("offset :0x%08lx\tlength: 0x%08lx\n", dwarf2_per_objfile->all_comp_units[i]->offset, dwarf2_per_objfile->all_comp_units[i]->length);
+//            debug("offset :0x%08lx\tlength: 0x%08lx\n", dwarf2_per_objfile->all_comp_units[i]->offset, dwarf2_per_objfile->all_comp_units[i]->length);
             target_dwarf2_per_cu_data = dwarf2_per_objfile->all_comp_units[i];
             break;
         }
